@@ -337,6 +337,9 @@ public final class TestLinkHelper {
 	public static String createReportSummary(Report testLinkReport, Report previous) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
+		if (testLinkReport.getPlatformName()!=null){
+			builder.append("<p><b>"+Messages.ReportSummary_Summary_PlatformName(testLinkReport.getPlatformName())+"</b></p>");
+		}
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
 		

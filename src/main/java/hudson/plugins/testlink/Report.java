@@ -46,6 +46,7 @@ public class Report implements Serializable {
 
 	private final int buildId;
 	private final String buildName;
+	private final String platformName;
 
 	private final List<TestCaseWrapper> testCases;
 
@@ -56,8 +57,21 @@ public class Report implements Serializable {
 		super();
 		this.buildId = buildId;
 		this.buildName = buildName;
+		this.platformName = null;
 		this.testCases = new LinkedList<TestCaseWrapper>();
 	}
+
+	/**
+	 *  Overriding default constructor to parse platform name.
+	 */
+	Report(int buildId, String buildName, String platformName) {
+		super();
+		this.buildId = buildId;
+		this.buildName = buildName;
+		this.platformName = platformName;
+		this.testCases = new LinkedList<TestCaseWrapper>();
+	}
+
 
 	/**
 	 * @return the tests total
@@ -138,6 +152,13 @@ public class Report implements Serializable {
 	 */
 	public String getBuildName() {
 		return buildName;
+	}
+
+	/**
+	 * @return the platformName
+	 */
+	public String getPlatformName() {
+		return platformName;
 	}
 
 	/**
