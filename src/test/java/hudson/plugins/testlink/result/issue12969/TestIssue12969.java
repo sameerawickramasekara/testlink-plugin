@@ -78,7 +78,7 @@ public class TestIssue12969 extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new TestNGMethodNameDataProviderNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false, DATA_PROVIDER_KEY_CUSTOM_FIELD, false);
+		return new TestNGMethodNameDataProviderNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false, false, DATA_PROVIDER_KEY_CUSTOM_FIELD, false);
 	}
 
 	/*

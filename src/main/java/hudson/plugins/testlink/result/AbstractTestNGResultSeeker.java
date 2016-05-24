@@ -61,12 +61,15 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	protected final TestNGParser parser = new TestNGParser();
 	
 	private boolean attachTestNGXML = false;
-	
+
+	private boolean matchSuiteName = false;
+
 	private boolean markSkippedTestAsBlocked = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean matchSuiteName, boolean markSkippedTestAsBlocked, boolean includeNotes) {
 		super(includePattern, keyCustomField, includeNotes);
 		this.attachTestNGXML = attachTestNGXML;
+		this.matchSuiteName = matchSuiteName;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
 
@@ -76,6 +79,14 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	public boolean isAttachTestNGXML() {
 		return attachTestNGXML;
+	}
+
+	public void setMatchSuiteName(boolean matchSuiteName) {
+		this.matchSuiteName = matchSuiteName;
+	}
+
+	public boolean isMatchSuiteName() {
+		return matchSuiteName;
 	}
 	
 	public void setMarkSkippedTestAsBlocked(boolean markSkippedTestAsBlocked) {

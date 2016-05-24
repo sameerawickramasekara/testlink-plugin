@@ -68,8 +68,8 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean matchSuiteName, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachTestNGXML, matchSuiteName, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -118,6 +118,12 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
                 }
 			});
 			for(Suite suite : suites) {
+				// Matching Suite name and the platform name
+				if (isMatchSuiteName()){
+					if (!suite.getName().equals(testlink.getPlatform().getName())){
+						continue;
+					}
+				}
 				for(Test test : suite.getTests() ) {
 					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestCaseWrapper automatedTestCase : automatedTestCases) {

@@ -71,23 +71,10 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean matchSuiteName, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachTestNGXML, matchSuiteName, markSkippedTestAsBlocked, includeNotes);
 	}
 	
-	@Extension
-	public static class DescriptorImpl extends ResultSeekerDescriptor {
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see hudson.model.Descriptor#getDisplayName()
-		 */
-		@Override
-		public String getDisplayName() {
-			return "TestNG method name"; // TBD: i18n
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
@@ -99,11 +86,11 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
-				
+
 				public List<Suite> invoke(File workspace, VirtualChannel channel)
 						throws IOException, InterruptedException {
 					final String[] xmls = TestNGMethodNameResultSeeker.this.scan(workspace, includePattern, listener);
-					
+
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
 						List <Suite> suitz = parser.parse(input);
@@ -111,7 +98,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 							suites.add(suite);
 						}
 					}
-					
+
 					return suites;
 				}
 
@@ -121,6 +108,12 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
                 }
 			});
 			for(Suite suite : suites) {
+				// Matching Suite name and the platform name
+				if (isMatchSuiteName()){
+					if (!suite.getName().equals(testlink.getPlatform().getName())){
+						continue;
+					}
+				}
 				for(Test test : suite.getTests() ) {
 					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestMethod method : clazz.getTestMethods()) {
@@ -133,12 +126,12 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 										if(status != ExecutionStatus.NOT_RUN) {
 											automatedTestCase.addCustomFieldAndStatus(value, status);
 										}
-										
+
 										if(this.isIncludeNotes()) {
 											final String notes = this.getTestNGNotes(method);
 											automatedTestCase.appendNotes(notes);
 										}
-										
+
 										super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 									}
 								}
@@ -151,7 +144,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
-		} 
+		}
 	}
 
 	/**
@@ -161,9 +154,9 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	private ExecutionStatus getExecutionStatus(TestMethod method) {
 		if ( StringUtils.isNotBlank(method.getStatus()) ) {
 			if(method.getStatus().equals(FAIL)) {
-				return ExecutionStatus.FAILED; 
+				return ExecutionStatus.FAILED;
 			} else if(method.getStatus().equals(SKIP)) {
-				if(this.isMarkSkippedTestAsBlocked()) { 
+				if(this.isMarkSkippedTestAsBlocked()) {
 					return ExecutionStatus.BLOCKED;
 				} else {
 					return ExecutionStatus.NOT_RUN;
@@ -175,27 +168,40 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
 	/**
 	 * Retrieves notes for TestNG suite.
-	 * 
+	 *
 	 * @param method TestNG test method.
 	 * @return notes for TestNG suite and test class.
 	 */
 	private String getTestNGNotes( TestMethod method )
 	{
 		StringBuilder notes = new StringBuilder();
-		
-		notes.append( 
+
+		notes.append(
 				Messages.Results_TestNG_NotesForMethods(
-						method.getName(), 
-						method.getIsConfig(), 
-						method.getSignature(), 
-						method.getStatus(), 
-						method.getDurationMs(), 
-						method.getStartedAt(), 
+						method.getName(),
+						method.getIsConfig(),
+						method.getSignature(),
+						method.getStatus(),
+						method.getDurationMs(),
+						method.getStartedAt(),
 						method.getFinishedAt()
 				)
 		);
-		
+
 		return notes.toString();
+	}
+
+	@Extension
+	public static class DescriptorImpl extends ResultSeekerDescriptor {
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see hudson.model.Descriptor#getDisplayName()
+		 */
+		@Override
+		public String getDisplayName() {
+			return "TestNG method name"; // TBD: i18n
+		}
 	}
 	
 }

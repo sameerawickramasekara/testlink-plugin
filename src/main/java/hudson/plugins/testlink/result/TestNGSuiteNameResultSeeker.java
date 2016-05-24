@@ -70,8 +70,8 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean matchSuiteName, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachTestNGXML, matchSuiteName, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -120,6 +120,12 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
                 }
 			});
 			for(Suite suite : suites) {
+				// Matching Suite name and the platform name
+				if (isMatchSuiteName()){
+					if (!suite.getName().equals(testlink.getPlatform().getName())){
+						continue;
+					}
+				}
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 					for(String value : commaSeparatedValues) {

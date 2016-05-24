@@ -77,11 +77,12 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	public TestNGMethodNameDataProviderNameResultSeeker(
 			String includePattern, 
 			String keyCustomField, 
-			boolean attachTestNGXML, 
+			boolean attachTestNGXML,
+			boolean matchSuiteName,
 			boolean markSkippedTestAsBlocked, 
 			String dataProviderNameKeyCustomField,
 			boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+		super(includePattern, keyCustomField, attachTestNGXML, matchSuiteName, markSkippedTestAsBlocked, includeNotes);
 		this.dataProviderNameKeyCustomField = dataProviderNameKeyCustomField;
 	}
 	
@@ -138,6 +139,12 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
                 }
 			});
 			for (Suite suite : suites) {
+				// Matching Suite name and the platform name
+				if (isMatchSuiteName()){
+					if (!suite.getName().equals(testlink.getPlatform().getName())){
+						continue;
+					}
+				}
 				for (Test test : suite.getTests()) {
 					for (com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for (TestMethod method : clazz.getTestMethods()) {
