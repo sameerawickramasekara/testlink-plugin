@@ -79,7 +79,7 @@ public class TestLinkSite {
 		this.platform = platform;
 		this.build = build;
 		if(build != null) {
-			report = new Report(build.getId() == null ? 0 : build.getId(), build.getName(),platform.getName());
+			report = new Report(build.getId() == null ? 0 : build.getId(), build.getName(),platform == null ? null : platform.getName());
 		} else {
 			report = new Report(0, null, platform.getName());
 		}
